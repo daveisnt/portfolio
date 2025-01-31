@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Images</title>
+    <style>
+        #input-container {
+            margin-bottom: 10px;
+        }
+        #text-input {
+            width: 300px;
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+        }
+        #image-container {
+            display: block;
+            white-space: pre-line;
+        }
+        img {
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div id="input-container">
+        <textarea id="text-input" placeholder="Type here..." rows="5" cols="30"></textarea>
+    </div>
+    <div id="image-container"></div>
+    
+    <script>
+        document.getElementById('text-input').addEventListener('input', function() {
+            let text = this.value.toLowerCase();
+            let imageContainer = document.getElementById('image-container');
+            
+            // Clear previous images
+            imageContainer.innerHTML = '';
+            
+            for (let char of text) {
+                if (char === '\n') {
+                    imageContainer.appendChild(document.createElement('br'));
+                    continue;
+                }
+                let img = document.createElement('img');
+                img.src = char === ' ' ? 'codex/_.png' : 'codex/' + char + '.png';
+                img.alt = char;
+                img.onerror = function() {
+                    this.style.display = 'none';
+                };
+                alert('Appending image: ' + img.src);
+                imageContainer.appendChild(img);
+            }
+        });
+    </script>
+</body>
+</html>

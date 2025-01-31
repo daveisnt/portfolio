@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding Kenzie</title>
+    <style>
+        #container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            min-height: 100px;
+            max-width: 100%;
+        }
+        .image-row {
+            display: flex;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+        img {
+            height: 100px;
+            margin-right: 5px;
+        }
+        #key-log {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            min-height: 50px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="image-row"></div>
+    </div>
+    <div id="key-log"></div>
+    <button id="save-button">Save</button>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        document.addEventListener('keydown', function(event) {
+            let key = event.key.toLowerCase(); // Convert to lowercase for case insensitivity
+            let container = document.getElementById('container');
+            let currentRow = container.lastElementChild;
+            let keyLog = document.getElementById('key-log');
+
+            if (event.key === 'Enter') {
+                createNewRow(container);
+                let br = document.createElement('br');
+                keyLog.appendChild(br);
+                return;
+            }
+
+            if (event.key === 'Backspace') {
+                let lastRow = container.lastElementChild;
+                if (lastRow && lastRow.lastElementChild) {
+                    lastRow.removeChild(lastRow.lastElementChild);
+                }
+                if (keyLog.lastChild) {
+                if (keyLog.lastChild.nodeName === 'BR') {
+                    keyLog.removeChild(keyLog.lastChild);
+                } else {
+                    keyLog.textContent = keyLog.textContent.slice(0, -1);
+                }
+                }
+                return;
+            }
+
+            let imagePath;
+            if (event.key === ' ') {
+                imagePath = 'codex/_.png';
+            } else {
+                imagePath = 'codex/' + key + '.png';
+            }
+            
+            let img = document.createElement('img');
+            img.src = imagePath;
+            img.alt = key;
+            img.onerror = function() { // Handle missing images gracefully
+                this.style.display = 'none';
+            };
+            
+            if (isRowFull(currentRow, img)) {
+                createNewRow(container);
+                currentRow = container.lastElementChild;
+            }
+
+            currentRow.appendChild(img);
+            let span = document.createElement('span');
+            span.textContent = key;
+            keyLog.appendChild(span);
+        });
+
+        function createNewRow(container) {
+            let newRow = document.createElement('div');
+            newRow.classList.add('image-row');
+            container.appendChild(newRow);
+        }
+
+        function isRowFull(row, newImg) {
+            let rowWidth = row.getBoundingClientRect().width;
+            let totalWidth = Array.from(row.children).reduce((sum, img) => sum + img.getBoundingClientRect().width + 5, 0);
+            return (totalWidth + newImg.width + 65) > rowWidth;
+        }
+
+        document.getElementById('save-button').addEventListener('click', function() {
+            alert("Starting capture...");
+            html2canvas(document.getElementById('container')).then(canvas => {
+                if (!canvas) {
+                    alert("Error: Failed to generate canvas.");
+                    return;
+                }
+                alert("Capture successful. Preparing download...");
+                let link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'keyboard_output.png';
+                link.click();
+                alert("Download started.");
+            }).catch(error => {
+                alert("Error: " + error.message);
+            });
+        });
+    </script>
+    <button id="clear-button">Clear</button>
+    <script>
+        document.getElementById('clear-button').addEventListener('click', function() {
+            document.getElementById('container').innerHTML = '<div class="image-row"></div>';
+            document.getElementById('key-log').innerHTML = '';
+        });
+    </script>
+    <input type="text" id="hidden-input" style="position: absolute; opacity: 0; pointer-events: none;">
+    <script>
+        function focusOnInput() {
+            let input = document.getElementById('hidden-input');
+            input.focus();
+        }
+
+        document.addEventListener('click', focusOnInput);
+        document.addEventListener('touchstart', focusOnInput);
+
+        window.onload = function() {
+            setTimeout(focusOnInput, 500);
+        };
+    </script>
+</body>
+</html>
