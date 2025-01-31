@@ -46,7 +46,6 @@
                 }
                 let img = document.createElement('img');
                 img.src = char === ' ' ? 'codex/_.png' : 'codex/' + char + '.png';
-                img.alt = char;
                 img.onerror = function() {
                     this.style.display = 'none';
                 };
