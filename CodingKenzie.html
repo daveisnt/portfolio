@@ -45,7 +45,7 @@
                     continue;
                 }
                 let img = document.createElement('img');
-                img.src = char === ' ' ? 'codex/_.png' : 'codex/' + char + '.png';
+                img.src = char === ' ' ? 'codex/space.png' : 'codex/' + char + '.png';
                 img.onerror = function() {
                     this.style.display = 'none';
                 };
