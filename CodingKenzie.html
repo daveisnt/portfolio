@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text to Images</title>
+    <title>Mackenzie's Codex</title>
     <style>
         #input-container {
             margin-bottom: 10px;
@@ -22,12 +22,14 @@
             height: 50px;
         }
     </style>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
     <div id="input-container">
         <textarea id="text-input" placeholder="Type here..." rows="5" cols="30"></textarea>
     </div>
     <div id="image-container"></div>
+    <button id="save-button">Save Image</button>
     
     <script>
         document.getElementById('text-input').addEventListener('input', function() {
@@ -48,9 +50,17 @@
                 img.onerror = function() {
                     this.style.display = 'none';
                 };
-                alert('Appending image: ' + img.src);
                 imageContainer.appendChild(img);
             }
+        });
+
+        document.getElementById('save-button').addEventListener('click', function() {
+            html2canvas(document.getElementById('image-container')).then(canvas => {
+                let link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'image.png';
+                link.click();
+            });
         });
     </script>
 </body>
